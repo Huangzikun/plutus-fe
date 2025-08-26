@@ -166,7 +166,10 @@ const local: App.I18n.Schema = {
     404: '页面不存在',
     500: '服务器错误',
     'iframe-page': '外链页面',
-    home: '首页'
+    home: '首页',
+    workload: '工作量管理',
+    workload_list: '工作量配置列表',
+    workload_detail: '工作量详情'
   },
   page: {
     login: {

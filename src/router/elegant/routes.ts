@@ -74,5 +74,35 @@ export const generatedRoutes: GeneratedRoute[] = [
       constant: true,
       hideInMenu: true
     }
+  },
+  {
+    name: 'workload',
+    path: '/workload',
+    component: 'layout.base',
+    meta: {
+      title: 'workload',
+      i18nKey: 'route.workload'
+    },
+    children: [
+      {
+        name: 'workload_detail',
+        path: '/workload/detail/:id',
+        component: 'view.workload_detail',
+        meta: {
+          title: 'workload_detail',
+          i18nKey: 'route.workload_detail',
+          hideInMenu: true
+        }
+      },
+      {
+        name: 'workload_list',
+        path: '/workload/list',
+        component: 'view.workload_list',
+        meta: {
+          title: 'workload_list',
+          i18nKey: 'route.workload_list'
+        }
+      }
+    ]
   }
 ];
