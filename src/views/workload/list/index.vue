@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import { h, onMounted, reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import type { DataTableColumns } from 'naive-ui';
-import { NButton, NDataTable, NSpace, NTag } from 'naive-ui';
-import mockData from './mock.json';
+import { NButton, NCard, NDataTable, NSpace, NTag } from 'naive-ui';
+import { createWorkload, fetchWorkloadList } from '@/service/api';
+import type { WorkloadListItem } from '@/service/api';
 
-interface WorkLoadConfig {
-  id: number;
-  semester: string;
-  configName: string;
-  createTime: string;
-  updateTime: string;
-}
-
+const router = useRouter();
 const loading = ref(false);
 
 // 表格数据
-const tableData = ref<WorkLoadConfig[]>([]);
+const tableData = ref<WorkloadListItem[]>([]);
 
 // 分页配置
 const pagination = reactive({
@@ -34,7 +29,7 @@ const pagination = reactive({
 });
 
 // 表格列定义
-const columns: DataTableColumns<WorkLoadConfig> = [
+const columns: DataTableColumns<WorkloadListItem> = [
   {
     key: 'semester',
     title: '所属学期',
@@ -103,29 +98,49 @@ const columns: DataTableColumns<WorkLoadConfig> = [
 ];
 
 // 编辑操作
-function handleEdit(row: WorkLoadConfig) {
+function handleEdit(row: WorkloadListItem) {
   window.$message?.info(`编辑: ${row.configName}`);
 }
 
 // 导出操作
-function handleExport(row: WorkLoadConfig) {
+function handleExport(row: WorkloadListItem) {
   window.$message?.success(`正在导出: ${row.configName}`);
 }
 
+// 新增工作量配置
+async function handleAdd() {
+  try {
+    const response = await createWorkload();
+    if (response.data) {
+      const { workload_id } = response.data;
+      router.push(`/workload/detail/${workload_id}`);
+    }
+  } catch {
+    window.$message?.error('创建失败，请稍后重试');
+  }
+}
+
 // 加载数据
-function loadData() {
+async function loadData() {
   loading.value = true;
 
-  // 模拟异步加载
-  setTimeout(() => {
-    const startIndex = (pagination.page - 1) * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize;
+  try {
+    const params = {
+      page: pagination.page,
+      pageSize: pagination.pageSize
+    };
 
-    tableData.value = mockData.slice(startIndex, endIndex);
-    pagination.itemCount = mockData.length;
+    const response = await fetchWorkloadList(params);
 
+    if (response.data) {
+      tableData.value = response.data.list;
+      pagination.itemCount = response.data.pagination.total;
+    }
+  } catch {
+    window.$message?.error('获取数据失败，请稍后重试');
+  } finally {
     loading.value = false;
-  }, 500);
+  }
 }
 
 // 监听分页变化
@@ -148,7 +163,10 @@ defineOptions({ name: 'WorkLoadList' });
   <div class="h-full flex-col">
     <NCard :bordered="false" class="card-wrapper">
       <template #header>
-        <div class="text-18px font-medium">工作量配置列表</div>
+        <div class="flex items-center justify-between">
+          <div class="text-18px font-medium">工作量配置列表</div>
+          <NButton type="primary" @click="handleAdd">新增</NButton>
+        </div>
       </template>
 
       <div class="h-full flex-col gap-16px">
