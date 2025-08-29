@@ -165,12 +165,13 @@ const local: App.I18n.Schema = {
     403: 'No Permission',
     404: 'Page Not Found',
     500: 'Server Error',
-    'iframe-page': 'Iframe',
+    'iframe-page': 'External Page',
     home: 'Home',
-    workload: 'Workload Management',
-    workload_list: 'Workload Configuration List',
-    workload_detail: 'Workload Details',
-    workload_theory: 'Add Theory Teaching'
+    workload: 'Teacher Workload Management',
+    workload_list: 'Teacher Workload List',
+    workload_detail: 'Teacher Workload Details',
+    workload_theory: 'Theory Teaching Workload',
+    workload_experiment: 'Experiment Teaching Workload'
   },
   page: {
     login: {

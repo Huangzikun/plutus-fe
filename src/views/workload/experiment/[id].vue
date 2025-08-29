@@ -18,7 +18,7 @@ import {
 import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
 
-interface TheoryTeachingForm {
+interface ExperimentTeachingForm {
   major: string;
   grade: string;
   class_name: string[];
@@ -33,11 +33,11 @@ interface TheoryTeachingForm {
 const router = useRouter();
 const route = useRoute();
 
-// 使用全局配置 - 理论教学专用配置
-const { theoryScaleOptions, theoryCoefficientOptions, fetchWorkloadConfig } = useWorkloadConfig();
+// 使用全局配置 - 实验教学专用配置
+const { experimentScaleOptions, experimentCoefficientOptions, fetchWorkloadConfig } = useWorkloadConfig();
 
 const formRef = ref();
-const formData = ref<TheoryTeachingForm>({
+const formData = ref<ExperimentTeachingForm>({
   major: '',
   grade: '',
   class_name: [],
@@ -147,14 +147,14 @@ const handleSubmit = async () => {
     };
 
     // 检查是否为修改模式
-    const theoryId = route.query.theory_id as string;
+    const experimentId = route.query.experiment_id as string;
 
-    // 使用相同的接口，区别在于是否包含theory_id
-    const url = `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/theory/edit`;
+    // 使用相同的接口，区别在于是否包含experiment_id
+    const url = `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/experiment/edit`;
 
-    // 如果是修改模式，添加theory_id参数
-    if (theoryId) {
-      Object.assign(submitData, { theory_id: theoryId });
+    // 如果是修改模式，添加experiment_id参数
+    if (experimentId) {
+      Object.assign(submitData, { experiment_id: experimentId });
     }
 
     // 调用提交接口
@@ -170,7 +170,7 @@ const handleSubmit = async () => {
 
     if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE) {
       // 提交成功，返回详情页
-      window.$message?.success(theoryId ? '修改成功' : '提交成功');
+      window.$message?.success(experimentId ? '修改成功' : '提交成功');
       router.push(`/workload/detail/${route.params.id}`);
     } else {
       // 提交失败，显示错误信息
@@ -200,10 +200,12 @@ const handleCreateClassTag = (value: string) => {
   return value;
 };
 
-// 获取理论工作量详情数据
-const fetchTheoryWorkloadDetail = async (theoryId: string) => {
+// 获取实验工作量详情数据
+const fetchExperimentWorkloadDetail = async (experimentId: string) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/theory/find?theory_id=${theoryId}`);
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/experiment/find?experiment_id=${experimentId}`
+    );
     const result = await response.json();
 
     if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
@@ -225,7 +227,7 @@ const fetchTheoryWorkloadDetail = async (theoryId: string) => {
       window.$message?.error(result.message || '数据加载失败');
     }
   } catch (error) {
-    console.error('获取理论工作量详情失败:', error);
+    console.error('获取实验工作量详情失败:', error);
     window.$message?.error('获取数据失败，请稍后重试');
   }
 };
@@ -235,10 +237,10 @@ onMounted(async () => {
   try {
     await fetchWorkloadConfig();
 
-    // 检查是否有theory_id参数，如果有则加载数据
-    const theoryId = route.query.theory_id as string;
-    if (theoryId) {
-      await fetchTheoryWorkloadDetail(theoryId);
+    // 检查是否有experiment_id参数，如果有则加载数据
+    const experimentId = route.query.experiment_id as string;
+    if (experimentId) {
+      await fetchExperimentWorkloadDetail(experimentId);
     }
   } catch (err) {
     window.$message?.error(`配置加载失败: ${err instanceof Error ? err.message : '未知错误'}`);
@@ -263,7 +265,7 @@ const handleTrialCalculation = async () => {
     };
 
     // 调用试算接口
-    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/theory/calculate`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/experiment/calculate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -296,7 +298,7 @@ const handleTrialCalculation = async () => {
     <NPageHeader>
       <template #title>
         <span class="text-20px font-medium">
-          {{ route.query.theory_id ? '修改理论教学工作量' : '新增理论教学工作量' }}
+          {{ route.query.experiment_id ? '修改实验教学工作量' : '新增实验教学工作量' }}
         </span>
       </template>
       <template #extra>
@@ -306,7 +308,7 @@ const handleTrialCalculation = async () => {
 
     <!-- 配置错误提示 -->
     <NAlert
-      v-if="theoryScaleOptions.length === 0 || theoryCoefficientOptions.length === 0"
+      v-if="experimentScaleOptions.length === 0 || experimentCoefficientOptions.length === 0"
       title="配置加载失败"
       type="error"
       class="mb-16px"
@@ -329,7 +331,7 @@ const handleTrialCalculation = async () => {
           label-width="auto"
           require-mark-placement="right-hanging"
           size="medium"
-          :disabled="theoryScaleOptions.length === 0 || theoryCoefficientOptions.length === 0"
+          :disabled="experimentScaleOptions.length === 0 || experimentCoefficientOptions.length === 0"
         >
           <NFormItem label="开课专业" path="major">
             <NInput v-model:value="formData.major" placeholder="请输入开课专业" />
@@ -358,7 +360,7 @@ const handleTrialCalculation = async () => {
           <NFormItem label="课程规模系数" path="class_scale_coefficient">
             <NSelect
               v-model:value="formData.class_scale_coefficient"
-              :options="theoryScaleOptions"
+              :options="experimentScaleOptions"
               placeholder="请选择课程规模系数"
               clearable
             />
@@ -371,7 +373,7 @@ const handleTrialCalculation = async () => {
           <NFormItem label="课程系数" path="course_coefficient">
             <NCascader
               v-model:value="formData.course_coefficient"
-              :options="theoryCoefficientOptions"
+              :options="experimentCoefficientOptions"
               placeholder="请选择课程系数"
               check-strategy="child"
               clearable

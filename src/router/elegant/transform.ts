@@ -171,6 +171,7 @@ const routeMap: RouteMap = {
   "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?",
   "workload": "/workload",
   "workload_detail": "/workload/detail/:id",
+  "workload_experiment": "/workload/experiment/:id",
   "workload_list": "/workload/list",
   "workload_theory": "/workload/theory/:id"
 };

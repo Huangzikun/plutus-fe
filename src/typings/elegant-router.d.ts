@@ -25,6 +25,7 @@ declare module "@elegant-router/types" {
     "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?";
     "workload": "/workload";
     "workload_detail": "/workload/detail/:id";
+    "workload_experiment": "/workload/experiment/:id";
     "workload_list": "/workload/list";
     "workload_theory": "/workload/theory/:id";
   };
@@ -88,6 +89,7 @@ declare module "@elegant-router/types" {
     | "login"
     | "home"
     | "workload_detail"
+    | "workload_experiment"
     | "workload_list"
     | "workload_theory"
   >;

@@ -22,6 +22,7 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   login: () => import("@/views/_builtin/login/index.vue"),
   home: () => import("@/views/home/index.vue"),
   workload_detail: () => import("@/views/workload/detail/[id].vue"),
+  workload_experiment: () => import("@/views/workload/experiment/[id].vue"),
   workload_list: () => import("@/views/workload/list/index.vue"),
   workload_theory: () => import("@/views/workload/theory/[id].vue"),
 };

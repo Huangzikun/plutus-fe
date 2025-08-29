@@ -1,44 +1,37 @@
 import { computed, ref } from 'vue';
 
+// 工作量配置项定义
+interface ConfigItem {
+  label: string;
+  value: string;
+  children?: {
+    label: string;
+    value: string | number;
+    children?: {
+      label: string;
+      value: number;
+    }[];
+  }[];
+}
+
+interface ScaleItem {
+  name: string;
+  value: number;
+}
+
+// 单个工作量类型配置
+interface WorkloadTypeConfig {
+  coefficient: ConfigItem[];
+  scale: ScaleItem[];
+}
+
 // 工作量配置接口定义
 export interface WorkloadConfig {
   code: string;
   msg: string;
   data: {
-    coefficient: {
-      label: string;
-      value: string;
-      children?: {
-        label: string;
-        value: string | number;
-        children?: {
-          label: string;
-          value: number;
-        }[];
-      }[];
-    }[];
-    scale: {
-      name: string;
-      value: number;
-    }[];
-    theory?: {
-      coefficient: {
-        label: string;
-        value: string;
-        children?: {
-          label: string;
-          value: string | number;
-          children?: {
-            label: string;
-            value: number;
-          }[];
-        }[];
-      }[];
-      scale: {
-        name: string;
-        value: number;
-      }[];
-    };
+    theory: WorkloadTypeConfig;
+    expirement: WorkloadTypeConfig;
   };
 }
 
@@ -50,9 +43,11 @@ const emptyConfig: WorkloadConfig = {
   code: '',
   msg: '',
   data: {
-    coefficient: [],
-    scale: [],
     theory: {
+      coefficient: [],
+      scale: []
+    },
+    expirement: {
       coefficient: [],
       scale: []
     }
@@ -122,9 +117,8 @@ function isConfigLoaded(): boolean {
   return Object.keys(config.value).length > 0;
 }
 
-// 计算属性：课程规模系数选项（只显示名称）
-const scaleOptions = computed(() => {
-  // 优先使用theory对象中的配置
+// 计算属性：理论教学课程规模系数选项
+const theoryScaleOptions = computed(() => {
   const theoryScale = config.value?.data?.theory?.scale;
   if (theoryScale && theoryScale.length > 0) {
     return theoryScale.map(item => ({
@@ -132,19 +126,11 @@ const scaleOptions = computed(() => {
       value: item.value
     }));
   }
-  // 如果没有theory配置，使用根级别的scale
-  if (config.value?.data?.scale) {
-    return config.value.data.scale.map(item => ({
-      label: `${item.name}`,
-      value: item.value
-    }));
-  }
   return [];
 });
 
-// 计算属性：课程系数级联选项（三级级联，只显示label）
-const coefficientOptions = computed(() => {
-  // 优先使用theory对象中的配置
+// 计算属性：理论教学课程系数级联选项
+const theoryCoefficientOptions = computed(() => {
   const theoryCoefficient = config.value?.data?.theory?.coefficient;
   if (theoryCoefficient && theoryCoefficient.length > 0) {
     return theoryCoefficient.map(item => {
@@ -173,9 +159,26 @@ const coefficientOptions = computed(() => {
       return item;
     });
   }
-  // 如果没有theory配置，使用根级别的coefficient
-  if (config.value?.data?.coefficient) {
-    return config.value.data.coefficient.map(item => {
+  return [];
+});
+
+// 计算属性：实验教学课程规模系数选项
+const experimentScaleOptions = computed(() => {
+  const experimentScale = config.value?.data?.expirement?.scale;
+  if (experimentScale && experimentScale.length > 0) {
+    return experimentScale.map(item => ({
+      label: `${item.name}`,
+      value: item.value
+    }));
+  }
+  return [];
+});
+
+// 计算属性：实验教学课程系数级联选项
+const experimentCoefficientOptions = computed(() => {
+  const experimentCoefficient = config.value?.data?.expirement?.coefficient;
+  if (experimentCoefficient && experimentCoefficient.length > 0) {
+    return experimentCoefficient.map(item => {
       if (item.children) {
         return {
           label: `${item.label}`,
@@ -204,6 +207,10 @@ const coefficientOptions = computed(() => {
   return [];
 });
 
+// 为了向后兼容，保留原来的scaleOptions和coefficientOptions，默认使用theory配置
+const scaleOptions = computed(() => theoryScaleOptions.value);
+const coefficientOptions = computed(() => theoryCoefficientOptions.value);
+
 export function useWorkloadConfig() {
   return {
     // 状态
@@ -217,9 +224,17 @@ export function useWorkloadConfig() {
     getConfigFromCache,
     isConfigLoaded,
 
-    // 计算属性
+    // 计算属性 - 通用（默认使用theory）
     scaleOptions,
-    coefficientOptions
+    coefficientOptions,
+
+    // 计算属性 - 理论教学专用
+    theoryScaleOptions,
+    theoryCoefficientOptions,
+
+    // 计算属性 - 实验教学专用
+    experimentScaleOptions,
+    experimentCoefficientOptions
   };
 }
 

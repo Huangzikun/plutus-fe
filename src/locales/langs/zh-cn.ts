@@ -160,18 +160,6 @@ const local: App.I18n.Schema = {
       resetSuccessMsg: '重置成功'
     }
   },
-  route: {
-    login: '登录',
-    403: '无权限',
-    404: '页面不存在',
-    500: '服务器错误',
-    'iframe-page': '外链页面',
-    home: '首页',
-    workload: '工作量管理',
-    workload_list: '工作量配置列表',
-    workload_detail: '工作量详情',
-    workload_theory: '新增理论教学'
-  },
   page: {
     login: {
       common: {
@@ -297,6 +285,19 @@ const local: App.I18n.Schema = {
   },
   datatable: {
     itemCount: '共 {total} 条'
+  },
+  route: {
+    '403': '无权限访问',
+    '404': '页面不存在',
+    '500': '服务器错误',
+    home: '首页',
+    'iframe-page': '外部页面',
+    login: '登录',
+    workload: '教师工作量管理',
+    workload_list: '教师工作量列表',
+    workload_detail: '教师工作量详情',
+    workload_theory: '理论教学工作量',
+    workload_experiment: '实验教学工作量'
   }
 };
 
