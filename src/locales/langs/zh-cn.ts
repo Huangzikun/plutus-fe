@@ -169,7 +169,8 @@ const local: App.I18n.Schema = {
     home: '首页',
     workload: '工作量管理',
     workload_list: '工作量配置列表',
-    workload_detail: '工作量详情'
+    workload_detail: '工作量详情',
+    workload_theory: '新增理论教学'
   },
   page: {
     login: {

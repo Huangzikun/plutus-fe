@@ -4,6 +4,7 @@ import { setupAppVersionNotification, setupDayjs, setupIconifyOffline, setupLoad
 import { setupStore } from './store';
 import { setupRouter } from './router';
 import { setupI18n } from './locales';
+import workloadConfigPlugin from './plugins/workloadConfig';
 import App from './App.vue';
 
 async function setupApp() {
@@ -22,6 +23,9 @@ async function setupApp() {
   await setupRouter(app);
 
   setupI18n(app);
+
+  // 注册工作量配置插件
+  app.use(workloadConfigPlugin);
 
   setupAppVersionNotification();
 

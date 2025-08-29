@@ -26,6 +26,7 @@ declare module "@elegant-router/types" {
     "workload": "/workload";
     "workload_detail": "/workload/detail/:id";
     "workload_list": "/workload/list";
+    "workload_theory": "/workload/theory/:id";
   };
 
   /**
@@ -88,6 +89,7 @@ declare module "@elegant-router/types" {
     | "home"
     | "workload_detail"
     | "workload_list"
+    | "workload_theory"
   >;
 
   /**

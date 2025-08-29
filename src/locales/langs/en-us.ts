@@ -169,7 +169,8 @@ const local: App.I18n.Schema = {
     home: 'Home',
     workload: 'Workload Management',
     workload_list: 'Workload Configuration List',
-    workload_detail: 'Workload Details'
+    workload_detail: 'Workload Details',
+    workload_theory: 'Add Theory Teaching'
   },
   page: {
     login: {

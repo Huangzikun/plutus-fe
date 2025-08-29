@@ -97,9 +97,9 @@ const columns: DataTableColumns<WorkloadListItem> = [
   }
 ];
 
-// 编辑操作
+// 编辑操作 - 跳转到详情页面
 function handleEdit(row: WorkloadListItem) {
-  window.$message?.info(`编辑: ${row.configName}`);
+  router.push(`/workload/detail/${row.id}`);
 }
 
 // 导出操作

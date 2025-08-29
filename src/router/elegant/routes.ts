@@ -102,6 +102,16 @@ export const generatedRoutes: GeneratedRoute[] = [
           title: 'workload_list',
           i18nKey: 'route.workload_list'
         }
+      },
+      {
+        name: 'workload_theory',
+        path: '/workload/theory/:id',
+        component: 'view.workload_theory',
+        meta: {
+          title: 'workload_theory',
+          i18nKey: 'route.workload_theory',
+          hideInMenu: true
+        }
       }
     ]
   }
