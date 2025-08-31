@@ -37,16 +37,6 @@ interface ExperimentTeaching {
   standard_workload: number;
 }
 
-interface OnlineCourse {
-  courseName: string;
-  platform: string;
-  courseHours: number;
-  studentCount: number;
-  completionRate: number;
-  semester: string;
-  coefficient: number | null;
-  totalWorkload: number;
-}
 
 interface GraduationInternship {
   studentName: string;
@@ -307,19 +297,6 @@ const calculateExperimentStandardHours = (item: ExperimentTeaching) => {
 const calculateOnlineStandardHours = (item: any) => {
   return item.standard_workload.toFixed(2);
 };
-
-const onlineCourseList: OnlineCourse[] = [
-  {
-    courseName: 'Python编程',
-    platform: '慕课平台',
-    courseHours: 48,
-    studentCount: 120,
-    completionRate: 85,
-    semester: '2024-2025-1',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 2937.6
-  }
-];
 
 const graduationInternshipList: GraduationInternship[] = [
   {

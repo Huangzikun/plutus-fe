@@ -15,6 +15,7 @@ import {
   NSelect,
   NSpace
 } from 'naive-ui';
+import FileUpload from '@/components/common/FileUpload.vue';
 import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
 
@@ -28,6 +29,8 @@ interface ExperimentTeachingForm {
   total_hours: number;
   course_coefficient: number | null;
   student_count: number;
+  support_files: string[];
+  remark: string;
 }
 
 const router = useRouter();
@@ -37,6 +40,7 @@ const route = useRoute();
 const { experimentScaleOptions, experimentCoefficientOptions, fetchWorkloadConfig } = useWorkloadConfig();
 
 const formRef = ref();
+const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
 const formData = ref<ExperimentTeachingForm>({
   major: '',
   grade: '',
@@ -46,7 +50,9 @@ const formData = ref<ExperimentTeachingForm>({
   class_scale_coefficient: 1,
   total_hours: 0,
   course_coefficient: null,
-  student_count: 0
+  student_count: 0,
+  support_files: [],
+  remark: ''
 });
 
 const rules: FormRules = {
@@ -101,6 +107,18 @@ const rules: FormRules = {
     required: true,
     message: '请输入学生人数',
     trigger: 'blur'
+  },
+  remark: {
+    type: 'string',
+    required: false,
+    message: '请输入备注信息',
+    trigger: 'blur'
+  },
+  support_files: {
+    type: 'array',
+    required: false,
+    message: '请上传支撑材料',
+    trigger: 'change'
   }
 };
 
@@ -116,6 +134,16 @@ const trialLoading = ref(false);
 // 错误信息
 const errorMessage = ref<string>('');
 const showError = ref(false);
+
+// 处理支撑材料上传成功
+const handleSupportFilesSuccess = (urls: string[]) => {
+  formData.value.support_files = urls;
+};
+
+// 处理支撑材料上传错误
+const handleSupportFilesError = (error: string) => {
+  window.$message?.error(`支撑材料上传失败: ${error}`);
+};
 
 // 返回按钮处理
 const handleBack = () => {
@@ -143,6 +171,8 @@ const handleSubmit = async () => {
       total_hours: formData.value.total_hours,
       course_coefficient: formData.value.course_coefficient,
       student_count: formData.value.student_count,
+      support_files: formData.value.support_files,
+      remark: formData.value.remark,
       workload_id: route.params.id
     };
 
@@ -220,7 +250,9 @@ const fetchExperimentWorkloadDetail = async (experimentId: string) => {
         class_scale_coefficient: data.class_scale_coefficient || 1,
         total_hours: data.total_hours || 0,
         course_coefficient: data.course_coefficient || null,
-        student_count: data.student_count || 0
+        student_count: data.student_count || 0,
+        support_files: data.support_files || [],
+        remark: data.remark || ''
       };
       window.$message?.success('数据加载成功');
     } else {
@@ -382,6 +414,32 @@ const handleTrialCalculation = async () => {
 
           <NFormItem label="学生人数" path="student_count">
             <NInputNumber v-model:value="formData.student_count" :min="0" :step="1" placeholder="请输入学生人数" />
+          </NFormItem>
+
+          <NFormItem label="备注" path="remark">
+            <NInput
+              v-model:value="formData.remark"
+              type="textarea"
+              placeholder="请输入备注信息（如无备注可留空）"
+              :maxlength="500"
+              show-count
+              :autosize="{ minRows: 3, maxRows: 5 }"
+            />
+            <template #feedback>
+              <span class="text-gray-500 text-sm">如无特殊说明，可留空</span>
+            </template>
+          </NFormItem>
+
+          <NFormItem label="支撑材料" path="support_files">
+            <FileUpload
+              ref="fileUploadRef"
+              :multiple="true"
+              :max-count="10"
+              :max-size="50"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
+              @success-multiple="handleSupportFilesSuccess"
+              @error="handleSupportFilesError"
+            />
           </NFormItem>
 
           <!-- 试算结果 -->
