@@ -40,7 +40,8 @@ interface ExperimentTeaching {
 interface GraduationInternship {
   studentName: string;
   studentId: string;
-  internshipType: string;
+  guidanceType: string; // 指导类型：带队教师驻点集中指导、其他方式实习指导
+  majorType?: string; // 专业类型：本专业、非本专业（仅当guidanceType为带队教师驻点集中指导时有效）
   startDate: number;
   endDate: number;
   duration: number;
@@ -301,13 +302,38 @@ const graduationInternshipList: GraduationInternship[] = [
   {
     studentName: '张三',
     studentId: '2022001',
-    internshipType: '企业实习',
+    guidanceType: '带队教师驻点集中指导',
+    majorType: '本专业',
     startDate: 1711900800000,
     endDate: 1719792000000,
     duration: 12,
     semester: '2024-2025-2',
     coefficient: null, // 使用配置中的值
     totalWorkload: 24.0
+  },
+  {
+    studentName: '李四',
+    studentId: '2022002',
+    guidanceType: '带队教师驻点集中指导',
+    majorType: '非本专业',
+    startDate: 1711900800000,
+    endDate: 1719792000000,
+    duration: 12,
+    semester: '2024-2025-2',
+    coefficient: null, // 使用配置中的值
+    totalWorkload: 20.0
+  },
+  {
+    studentName: '王五',
+    studentId: '2022003',
+    guidanceType: '其他方式实习指导',
+    majorType: undefined,
+    startDate: 1711900800000,
+    endDate: 1719792000000,
+    duration: 12,
+    semester: '2024-2025-2',
+    coefficient: null, // 使用配置中的值
+    totalWorkload: 18.0
   }
 ];
 
@@ -523,28 +549,17 @@ const teachingServiceList: TeachingService[] = [
         <NTable :bordered="true" :single-line="false">
           <thead>
             <tr>
-              <th>学生姓名</th>
-              <th>学号</th>
-              <th>实习类型</th>
-              <th>开始日期</th>
-              <th>结束日期</th>
-              <th>持续周数</th>
-              <th>学期</th>
-              <th>系数</th>
-              <th>总工作量</th>
+              <th colspan="2">带队教师驻点集中指导</th>
+              <th rowspan="2">其他方式实习指导</th>
+            </tr>
+            <tr>
+              <th>本专业</th>
+              <th>非本专业</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in graduationInternshipList" :key="index">
-              <td>{{ item.studentName || '-' }}</td>
-              <td>{{ item.studentId || '-' }}</td>
-              <td>{{ item.internshipType || '-' }}</td>
-              <td>{{ item.startDate ? new Date(item.startDate).toLocaleDateString() : '-' }}</td>
-              <td>{{ item.endDate ? new Date(item.endDate).toLocaleDateString() : '-' }}</td>
-              <td>{{ item.duration || 0 }}</td>
-              <td>{{ item.semester || '-' }}</td>
-              <td>{{ item.coefficient || 0 }}</td>
-              <td>{{ Number(item.totalWorkload || 0).toFixed(2) }}</td>
+            <tr>
+              <td colspan="3" class="py-16px text-center text-gray-500">暂无毕业实习指导工作量记录</td>
             </tr>
           </tbody>
         </NTable>
