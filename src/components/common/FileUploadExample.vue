@@ -60,7 +60,6 @@ const submitForm = () => {
   formRef.value?.validate(errors => {
     if (!errors) {
       message.success('表单验证通过');
-      console.log('Form data:', form);
     } else {
       message.error('请检查表单数据');
     }
@@ -85,7 +84,7 @@ const copyUrl = async (url: string) => {
   try {
     await navigator.clipboard.writeText(url);
     message.success('URL已复制到剪贴板');
-  } catch (err) {
+  } catch (_err) {
     message.error('复制失败');
   }
 };
@@ -148,11 +147,13 @@ const copyUrl = async (url: string) => {
       <NList size="small">
         <NListItem v-for="item in uploadedUrls" :key="item">
           <NSpace align="center">
-            <NText code class="text-xs" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis">
+            <NText code class="max-w-300px overflow-hidden text-ellipsis text-xs">
               {{ item }}
             </NText>
             <NButton size="tiny" type="primary" text @click="copyUrl(item)">复制</NButton>
-            <NButton size="tiny" type="info" text tag="a" :href="item" target="_blank">打开</NButton>
+            <NButton size="tiny" type="info" text tag="a" :href="item" target="_blank" rel="noopener noreferrer">
+              打开
+            </NButton>
           </NSpace>
         </NListItem>
       </NList>

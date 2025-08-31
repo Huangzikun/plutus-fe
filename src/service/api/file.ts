@@ -1,5 +1,5 @@
 import { request } from '@/service/request';
-import { uploadFileDev } from './upload-mock';
+// import { uploadFileDev } from './upload-mock';
 
 /**
  * 上传文件
