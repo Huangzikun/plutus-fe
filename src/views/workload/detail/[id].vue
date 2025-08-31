@@ -102,6 +102,9 @@ const theoryTeachingList = ref<TheoryTeaching[]>([]);
 // 动态实验教学工作量列表
 const experimentTeachingList = ref<ExperimentTeaching[]>([]);
 
+// 动态网络课程教学工作量列表
+const onlineTeachingList = ref<TheoryTeaching[]>([]);
+
 // 获取理论教学工作量列表
 const fetchTheoryWorkloadList = async () => {
   try {
@@ -142,11 +145,32 @@ const fetchExperimentWorkloadList = async () => {
   }
 };
 
+// 获取网络课程教学工作量列表
+const fetchOnlineWorkloadList = async () => {
+  try {
+    const workloadId = route.params.id;
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/online/list?workload_id=${workloadId}`
+    );
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
+      onlineTeachingList.value = result.data.online_list || [];
+    } else {
+      onlineTeachingList.value = [];
+    }
+  } catch (error) {
+    console.error('获取网络课程教学工作量失败:', error);
+    onlineTeachingList.value = [];
+  }
+};
+
 // 组件挂载时加载数据
 onMounted(async () => {
   await fetchWorkloadConfig();
   await fetchTheoryWorkloadList();
   await fetchExperimentWorkloadList();
+  await fetchOnlineWorkloadList();
 });
 
 // 跳转到理论教学工作量添加页面
@@ -229,6 +253,46 @@ const handleDeleteExperimentTeaching = async (item: ExperimentTeaching) => {
   }
 };
 
+// 跳转到网络课程教学工作量添加页面
+const handleAddOnlineTeaching = () => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/online/${teacherId}`);
+};
+
+// 跳转到网络课程教学工作量修改页面
+const handleEditOnlineTeaching = (item: any) => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/online/${teacherId}?online_id=${item.id}`);
+};
+
+// 删除网络课程教学工作量记录
+const handleDeleteOnlineTeaching = async (item: any) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/online/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        online_id: item.id
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE) {
+      window.$message?.success('删除成功');
+      // 删除后刷新列表
+      await fetchOnlineWorkloadList();
+    } else {
+      window.$message?.error(result.message || '删除失败');
+    }
+  } catch (error) {
+    console.error('删除网络课程教学工作量失败:', error);
+    window.$message?.error('删除请求失败，请稍后重试');
+  }
+};
+
 // 计算理论教学标准学时
 const calculateStandardHours = (item: TheoryTeaching) => {
   return item.standard_workload.toFixed(2);
@@ -236,6 +300,11 @@ const calculateStandardHours = (item: TheoryTeaching) => {
 
 // 计算实验教学标准学时
 const calculateExperimentStandardHours = (item: ExperimentTeaching) => {
+  return item.standard_workload.toFixed(2);
+};
+
+// 计算网络课程教学标准学时
+const calculateOnlineStandardHours = (item: any) => {
   return item.standard_workload.toFixed(2);
 };
 
@@ -421,30 +490,52 @@ const teachingServiceList: TeachingService[] = [
 
       <!-- 网络课程教学工作量 -->
       <div>
-        <h3 class="mb-16px text-18px font-medium">网络课程教学工作量</h3>
+        <div class="mb-16px flex items-center justify-between">
+          <h3 class="text-18px font-medium">网络课程教学工作量</h3>
+          <NButton type="primary" @click="handleAddOnlineTeaching">
+            <template #icon>
+              <icon-ic:round-add />
+            </template>
+            新增
+          </NButton>
+        </div>
         <NTable :bordered="true" :single-line="false">
           <thead>
             <tr>
+              <th>开课专业</th>
+              <th>开课年级</th>
+              <th>开课班级</th>
+              <th>课程代码</th>
               <th>课程名称</th>
-              <th>平台</th>
-              <th>课时</th>
-              <th>学生人数</th>
-              <th>完成率</th>
-              <th>学期</th>
-              <th>系数</th>
-              <th>总工作量</th>
+              <th>课程规模系数</th>
+              <th>总学时</th>
+              <th>课程系数</th>
+              <th>人数</th>
+              <th>标准学时</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in onlineCourseList" :key="index">
-              <td>{{ item.courseName || '-' }}</td>
-              <td>{{ item.platform || '-' }}</td>
-              <td>{{ item.courseHours || 0 }}</td>
-              <td>{{ item.studentCount || 0 }}</td>
-              <td>{{ item.completionRate || 0 }}%</td>
-              <td>{{ item.semester || '-' }}</td>
-              <td>{{ item.coefficient || 0 }}</td>
-              <td>{{ Number(item.totalWorkload || 0).toFixed(2) }}</td>
+            <tr v-for="item in onlineTeachingList" :key="item.id">
+              <td>{{ item.major || '-' }}</td>
+              <td>{{ item.grade || '-' }}</td>
+              <td>{{ item.class_name?.join(', ') || '-' }}</td>
+              <td>{{ item.course_code || '-' }}</td>
+              <td>{{ item.course_name || '-' }}</td>
+              <td>{{ item.class_scale_coefficient || 0 }}</td>
+              <td>{{ item.total_hours || 0 }}</td>
+              <td>{{ item.course_coefficient || 0 }}</td>
+              <td>{{ item.student_count || 0 }}</td>
+              <td>{{ calculateOnlineStandardHours(item) }}</td>
+              <td>
+                <NSpace>
+                  <NButton size="small" type="primary" @click="handleEditOnlineTeaching(item)">修改</NButton>
+                  <NButton size="small" type="error" @click="handleDeleteOnlineTeaching(item)">删除</NButton>
+                </NSpace>
+              </td>
+            </tr>
+            <tr v-if="onlineTeachingList.length === 0">
+              <td colspan="11" class="py-16px text-center text-gray-500">暂无网络课程教学工作量记录</td>
             </tr>
           </tbody>
         </NTable>

@@ -114,6 +114,16 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'workload_online',
+        path: '/workload/online/:id',
+        component: 'view.workload_online',
+        meta: {
+          title: '网络课程教学工作量',
+          i18nKey: 'route.workload_online',
+          hideInMenu: true
+        }
+      },
+      {
         name: 'workload_theory',
         path: '/workload/theory/:id',
         component: 'view.workload_theory',

@@ -32,6 +32,7 @@ export interface WorkloadConfig {
   data: {
     theory: WorkloadTypeConfig;
     expirement: WorkloadTypeConfig;
+    online: WorkloadTypeConfig;
   };
 }
 
@@ -48,6 +49,10 @@ const emptyConfig: WorkloadConfig = {
       scale: []
     },
     expirement: {
+      coefficient: [],
+      scale: []
+    },
+    online: {
       coefficient: [],
       scale: []
     }
@@ -207,6 +212,51 @@ const experimentCoefficientOptions = computed(() => {
   return [];
 });
 
+// 计算属性：网络课程教学课程规模系数选项
+const onlineScaleOptions = computed(() => {
+  const onlineScale = config.value?.data?.online?.scale;
+  if (onlineScale && onlineScale.length > 0) {
+    return onlineScale.map(item => ({
+      label: `${item.name}`,
+      value: item.value
+    }));
+  }
+  return [];
+});
+
+// 计算属性：网络课程教学课程系数级联选项
+const onlineCoefficientOptions = computed(() => {
+  const onlineCoefficient = config.value?.data?.online?.coefficient;
+  if (onlineCoefficient && onlineCoefficient.length > 0) {
+    return onlineCoefficient.map(item => {
+      if (item.children) {
+        return {
+          label: `${item.label}`,
+          value: item.value,
+          children: item.children.map(child => {
+            if (child.children) {
+              return {
+                label: `${child.label}`,
+                value: child.value,
+                children: child.children.map(grandChild => ({
+                  label: `${grandChild.label}`,
+                  value: grandChild.value
+                }))
+              };
+            }
+            return {
+              label: `${child.label}`,
+              value: child.value
+            };
+          })
+        };
+      }
+      return item;
+    });
+  }
+  return [];
+});
+
 // 为了向后兼容，保留原来的scaleOptions和coefficientOptions，默认使用theory配置
 const scaleOptions = computed(() => theoryScaleOptions.value);
 const coefficientOptions = computed(() => theoryCoefficientOptions.value);
@@ -234,7 +284,11 @@ export function useWorkloadConfig() {
 
     // 计算属性 - 实验教学专用
     experimentScaleOptions,
-    experimentCoefficientOptions
+    experimentCoefficientOptions,
+
+    // 计算属性 - 网络课程教学专用
+    onlineScaleOptions,
+    onlineCoefficientOptions
   };
 }
 
