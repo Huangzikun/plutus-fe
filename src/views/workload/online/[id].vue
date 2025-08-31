@@ -15,9 +15,9 @@ import {
   NSelect,
   NSpace
 } from 'naive-ui';
-import FileUpload from '@/components/common/FileUpload.vue';
 import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
+import FileUpload from '@/components/common/FileUpload.vue';
 
 interface OnlineTeachingForm {
   major: string;
@@ -424,7 +424,7 @@ const handleTrialCalculation = async () => {
               :autosize="{ minRows: 3, maxRows: 5 }"
             />
             <template #feedback>
-              <span class="text-gray-500 text-sm">如无特殊说明，可留空</span>
+              <span class="text-sm text-gray-500">如无特殊说明，可留空</span>
             </template>
           </NFormItem>
 

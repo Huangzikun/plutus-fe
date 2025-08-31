@@ -1,29 +1,3 @@
-<template>
-  <n-upload
-    v-model:file-list="fileList"
-    :accept="accept"
-    :multiple="multiple"
-    :max="maxCount"
-    :show-file-list="showFileList"
-    :custom-request="customRequest"
-    @update:file-list="handleFileListChange"
-    @remove="handleRemove"
-  >
-    <n-button type="primary">
-      <template #icon>
-        <n-icon>
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20">
-            <g fill="none">
-              <path d="M13.596 5.404a.5.5 0 0 1 .09.908l-3.707 2.146a.5.5 0 0 0-.204.436v4.102a.5.5 0 0 1-1 0V8.894a.5.5 0 0 0-.204-.436L5.764 6.312a.5.5 0 0 1 .09-.908l3.707 2.146a.5.5 0 0 0 .472 0l3.563-2.146zM7.5 14a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z" fill="currentColor"></path>
-            </g>
-          </svg>
-        </n-icon>
-      </template>
-      上传文件
-    </n-button>
-  </n-upload>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { UploadFileInfo } from 'naive-ui';
@@ -64,9 +38,9 @@ const handleFileListChange = (fileListData: UploadFileInfo[]) => {
 };
 
 // 处理文件移除
-const handleRemove = (data: { file: UploadFileInfo, fileList: UploadFileInfo[] }) => {
+const handleRemove = (data: { file: UploadFileInfo; fileList: UploadFileInfo[] }) => {
   fileList.value = data.fileList;
-  
+
   // 如果是已上传的文件，可以在这里添加删除服务器的逻辑
   if (data.file.url) {
     console.log('移除文件:', data.file.name);
@@ -78,14 +52,14 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: any) => {
   try {
     const formData = new FormData();
     formData.append('file', file.file as File);
-    
+
     const response = await uploadFile(formData, {
       onUploadProgress: (progressEvent: any) => {
         const progress = Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
         onProgress({ percent: progress });
       }
     });
-    
+
     if (response) {
       // 创建已上传的文件对象，保持原始id
       const newFile: UploadFileInfo = {
@@ -94,7 +68,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: any) => {
         status: 'finished',
         url: (response as any).url || (response as any).data?.url || ''
       };
-      
+
       // 更新文件列表
       if (props.multiple) {
         const index = fileList.value.findIndex(f => f.id === file.id);
@@ -107,7 +81,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: any) => {
         fileList.value = [newFile];
         emit('success', (response as any).url || (response as any).data?.url || '');
       }
-      
+
       message.success(`文件 ${file.name} 上传成功`);
       onFinish();
     } else {
@@ -136,3 +110,32 @@ defineExpose({
   getUploadedUrls
 });
 </script>
+
+<template>
+  <NUpload
+    v-model:file-list="fileList"
+    :accept="accept"
+    :multiple="multiple"
+    :max="maxCount"
+    :show-file-list="showFileList"
+    :custom-request="customRequest"
+    @update:file-list="handleFileListChange"
+    @remove="handleRemove"
+  >
+    <NButton type="primary">
+      <template #icon>
+        <NIcon>
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20">
+            <g fill="none">
+              <path
+                d="M13.596 5.404a.5.5 0 0 1 .09.908l-3.707 2.146a.5.5 0 0 0-.204.436v4.102a.5.5 0 0 1-1 0V8.894a.5.5 0 0 0-.204-.436L5.764 6.312a.5.5 0 0 1 .09-.908l3.707 2.146a.5.5 0 0 0 .472 0l3.563-2.146zM7.5 14a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"
+                fill="currentColor"
+              ></path>
+            </g>
+          </svg>
+        </NIcon>
+      </template>
+      上传文件
+    </NButton>
+  </NUpload>
+</template>

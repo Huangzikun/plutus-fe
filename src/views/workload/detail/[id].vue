@@ -37,7 +37,6 @@ interface ExperimentTeaching {
   standard_workload: number;
 }
 
-
 interface GraduationInternship {
   studentName: string;
   studentId: string;

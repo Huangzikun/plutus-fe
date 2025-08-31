@@ -21,13 +21,13 @@ export interface FileUploadConfig {
  */
 export interface FileUploadEvents {
   /** 单个文件上传成功 */
-  'success': [url: string];
+  success: [url: string];
   /** 多个文件上传成功 */
   'success-multiple': [urls: string[]];
   /** 上传错误 */
-  'error': [error: string];
+  error: [error: string];
   /** 文件移除 */
-  'remove': [file: File];
+  remove: [file: File];
 }
 
 /**

@@ -11,7 +11,7 @@ export async function uploadFile(file: FormData, config?: any) {
   // if (import.meta.env.DEV) {
   //   return await uploadFileDev(file, config);
   // }
-  
+
   return await request({
     url: '/file/upload',
     method: 'POST',
@@ -32,7 +32,7 @@ export function uploadMultipleFiles(files: File[]) {
   files.forEach((file, index) => {
     formData.append(`files[${index}]`, file);
   });
-  
+
   return request({
     url: '/file/upload/multiple',
     method: 'POST',
@@ -47,13 +47,12 @@ export function uploadMultipleFiles(files: File[]) {
  * 获取文件列表
  * @param params - 查询参数
  */
-export function getFileList(params?: {
-  page?: number;
-  size?: number;
-  type?: string;
-  keyword?: string;
-}) {
-  return request.get('/file/list', { params });
+export function getFileList(params?: { page?: number; size?: number; type?: string; keyword?: string }) {
+  return request({
+    url: '/file/list',
+    method: 'GET',
+    params
+  });
 }
 
 /**
@@ -61,7 +60,11 @@ export function getFileList(params?: {
  * @param url - 文件URL
  */
 export function deleteFile(url: string) {
-  return request.delete('/file/delete', { params: { url } });
+  return request({
+    url: '/file/delete',
+    method: 'DELETE',
+    params: { url }
+  });
 }
 
 /**
@@ -69,7 +72,9 @@ export function deleteFile(url: string) {
  * @param url - 文件URL
  */
 export function downloadFile(url: string) {
-  return request.get('/file/download', { 
+  return request({
+    url: '/file/download',
+    method: 'GET',
     params: { url },
     responseType: 'blob'
   });
@@ -80,5 +85,9 @@ export function downloadFile(url: string) {
  * @param url - 文件URL
  */
 export function getFileInfo(url: string) {
-  return request.get('/file/info', { params: { url } });
+  return request({
+    url: '/file/info',
+    method: 'GET',
+    params: { url }
+  });
 }

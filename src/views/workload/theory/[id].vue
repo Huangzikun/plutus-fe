@@ -15,9 +15,9 @@ import {
   NSelect,
   NSpace
 } from 'naive-ui';
-import FileUpload from '@/components/common/FileUpload.vue';
 import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
+import FileUpload from '@/components/common/FileUpload.vue';
 
 interface TheoryTeachingForm {
   major: string;
@@ -144,7 +144,6 @@ const handleSupportFilesSuccess = (urls: string[]) => {
 const handleSupportFilesError = (error: string) => {
   window.$message?.error(`支撑材料上传失败: ${error}`);
 };
-
 
 // 返回按钮处理
 const handleBack = () => {
@@ -425,7 +424,7 @@ const handleTrialCalculation = async () => {
               :autosize="{ minRows: 3, maxRows: 5 }"
             />
             <template #feedback>
-              <span class="text-gray-500 text-sm">如无特殊说明，可留空</span>
+              <span class="text-sm text-gray-500">如无特殊说明，可留空</span>
             </template>
           </NFormItem>
 
