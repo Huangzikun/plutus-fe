@@ -44,6 +44,13 @@ interface GraduationInternship {
   standard_workload: number;
 }
 
+interface PaperWorkload {
+  id: number;
+  paper_type: string;
+  paper_count: number;
+  standard_workload: number;
+}
+
 // 使用全局配置
 const { fetchWorkloadConfig } = useWorkloadConfig();
 
@@ -58,6 +65,9 @@ const onlineTeachingList = ref<TheoryTeaching[]>([]);
 
 // 动态毕业实习指导工作量列表
 const internshipList = ref<GraduationInternship[]>([]);
+
+// 动态论文工作量列表
+const paperList = ref<PaperWorkload[]>([]);
 
 // 获取理论教学工作量列表
 const fetchTheoryWorkloadList = async () => {
@@ -137,6 +147,25 @@ const fetchInternshipList = async () => {
   }
 };
 
+// 获取论文工作量列表
+const fetchPaperList = async () => {
+  try {
+    const workloadId = route.params.id;
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/paper/list?workload_id=${workloadId}`
+    );
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
+      paperList.value = result.data.paper_list || [];
+    } else {
+      paperList.value = [];
+    }
+  } catch {
+    paperList.value = [];
+  }
+};
+
 // 组件挂载时加载数据
 onMounted(async () => {
   await fetchWorkloadConfig();
@@ -144,6 +173,7 @@ onMounted(async () => {
   await fetchExperimentWorkloadList();
   await fetchOnlineWorkloadList();
   await fetchInternshipList();
+  await fetchPaperList();
 });
 
 // 跳转到理论教学工作量添加页面
@@ -317,6 +347,46 @@ const handleDeleteInternship = async (item: GraduationInternship) => {
     }
   } catch (error) {
     console.error('删除毕业实习指导工作量失败:', error);
+    window.$message?.error('删除请求失败，请稍后重试');
+  }
+};
+
+// 跳转到论文工作量添加页面
+const handleAddPaper = () => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/paper/${teacherId}`);
+};
+
+// 跳转到论文工作量修改页面
+const handleEditPaper = (item: PaperWorkload) => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/paper/${teacherId}?paper_id=${item.id}`);
+};
+
+// 删除论文工作量记录
+const handleDeletePaper = async (item: PaperWorkload) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/paper/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        paper_id: item.id
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE) {
+      window.$message?.success('删除成功');
+      // 删除后刷新列表
+      await fetchPaperList();
+    } else {
+      window.$message?.error(result.message || '删除失败');
+    }
+  } catch (error) {
+    console.error('删除论文工作量失败:', error);
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };
@@ -527,26 +597,40 @@ const handleDeleteInternship = async (item: GraduationInternship) => {
         </NTable>
       </div>
 
-      <!-- 毕业论文指导工作量 -->
+      <!-- 论文工作量 -->
       <div>
-        <h3 class="mb-16px text-18px font-medium">毕业论文指导工作量</h3>
+        <div class="mb-16px flex items-center justify-between">
+          <h3 class="text-18px font-medium">论文工作量</h3>
+          <NButton type="primary" @click="handleAddPaper">
+            <template #icon>
+              <icon-ic:round-add />
+            </template>
+            新增
+          </NButton>
+        </div>
         <NTable :bordered="true" :single-line="false">
           <thead>
             <tr>
-              <th>学生姓名</th>
-              <th>学号</th>
               <th>论文类型</th>
-              <th>开始日期</th>
-              <th>结束日期</th>
-              <th>进度</th>
-              <th>学期</th>
-              <th>系数</th>
-              <th>总工作量</th>
+              <th>份数</th>
+              <th>标准学时</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td colspan="9" class="py-16px text-center text-gray-500">暂无毕业论文指导工作量记录</td>
+            <tr v-for="(item, index) in paperList" :key="index">
+              <td>{{ item.paper_type || '-' }}</td>
+              <td>{{ item.paper_count || 0 }}</td>
+              <td>{{ Number(item.standard_workload || 0).toFixed(2) }}</td>
+              <td>
+                <NSpace size="small">
+                  <NButton size="small" type="primary" @click="handleEditPaper(item)">修改</NButton>
+                  <NButton size="small" type="error" @click="handleDeletePaper(item)">删除</NButton>
+                </NSpace>
+              </td>
+            </tr>
+            <tr v-if="paperList.length === 0">
+              <td colspan="4" class="py-16px text-center text-gray-500">暂无论文工作量记录</td>
             </tr>
           </tbody>
         </NTable>

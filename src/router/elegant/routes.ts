@@ -134,6 +134,15 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'workload_paper',
+        path: '/workload/paper/:id',
+        component: 'view.workload_paper',
+        meta: {
+          title: 'workload_paper',
+          i18nKey: 'route.workload_paper'
+        }
+      },
+      {
         name: 'workload_theory',
         path: '/workload/theory/:id',
         component: 'view.workload_theory',

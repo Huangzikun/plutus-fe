@@ -26,5 +26,6 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   workload_internship: () => import("@/views/workload/internship/[id].vue"),
   workload_list: () => import("@/views/workload/list/index.vue"),
   workload_online: () => import("@/views/workload/online/[id].vue"),
+  workload_paper: () => import("@/views/workload/paper/[id].vue"),
   workload_theory: () => import("@/views/workload/theory/[id].vue"),
 };

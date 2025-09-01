@@ -173,7 +173,8 @@ const local: App.I18n.Schema = {
     workload_theory: 'Theory Teaching Workload',
     workload_experiment: 'Experiment Teaching Workload',
     workload_online: 'Online Course Teaching Workload',
-    workload_internship: 'Graduation Internship Guidance Workload'
+    workload_internship: 'Graduation Internship Guidance Workload',
+    workload_paper: 'Paper Workload'
   },
   page: {
     login: {

@@ -6,9 +6,9 @@ import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
 import FileUpload from '@/components/common/FileUpload.vue';
 
-interface GraduationInternshipForm {
-  guidanceType: number; // 指导类型值，直接存储int值
-  studentCount: number | null; // 学生人数
+interface PaperForm {
+  paperType: number | null; // 论文指导类型值
+  paperCount: number | null; // 份数
   totalWorkload: number;
   support_files: string[];
   remark: string;
@@ -17,7 +17,7 @@ interface GraduationInternshipForm {
 const router = useRouter();
 const route = useRoute();
 
-const { fetchWorkloadConfig, internshipGuidanceTypeOptions } = useWorkloadConfig();
+const { fetchWorkloadConfig, paperTypeOptions } = useWorkloadConfig();
 
 const formRef = ref();
 const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
@@ -30,45 +30,45 @@ const trialResult = ref<{
 
 // 试算加载状态
 const trialLoading = ref(false);
-const formData = ref<GraduationInternshipForm>({
-  guidanceType: 0,
-  studentCount: null,
+const formData = ref<PaperForm>({
+  paperType: null,
+  paperCount: null,
   totalWorkload: 0,
   support_files: [],
   remark: ''
 });
 
 const formRules: FormRules = {
-  guidanceType: [{ required: true, type: 'number', min: 1, message: '请选择指导类型', trigger: 'change' }],
-  studentCount: [
-    { required: true, type: 'number', message: '请输入学生人数', trigger: 'blur' },
+  paperType: [{ required: true, type: 'number', min: 1, message: '请选择论文指导类型', trigger: 'change' }],
+  paperCount: [
+    { required: true, type: 'number', message: '请输入份数', trigger: 'blur' },
     {
       type: 'number',
       min: 0,
       max: 100,
-      message: '学生人数必须在0-100之间',
+      message: '份数必须在0-100之间',
       trigger: 'blur'
     }
   ]
 };
 
 const isEditing = ref(false);
-const internshipId = ref<string | null>(null);
+const paperId = ref<string | null>(null);
 
 // 自动试算处理
 const autoCalculate = async () => {
-  if (formData.value.guidanceType > 0 && formData.value.studentCount) {
+  if (formData.value.paperType && formData.value.paperType > 0 && formData.value.paperCount) {
     try {
       trialLoading.value = true;
 
       // 准备试算数据
       const trialData = {
-        guidance_type: formData.value.guidanceType,
-        student_count: formData.value.studentCount
+        paper_type: formData.value.paperType,
+        paper_count: formData.value.paperCount
       };
 
       // 调用试算接口
-      const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/calculate`, {
+      const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/paper/calculate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const autoCalculate = async () => {
 };
 
 // 监听数据变化，自动试算
-watch([() => formData.value.guidanceType, () => formData.value.studentCount], () => {
+watch([() => formData.value.paperType, () => formData.value.paperCount], () => {
   autoCalculate();
 });
 
@@ -108,17 +108,17 @@ const handleSubmit = async () => {
     await formRef.value?.validate();
 
     const teacherId = route.params.id;
-    const apiUrl = `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/edit`;
+    const apiUrl = `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/paper/edit`;
 
     // 准备提交数据
     const submitData = {
-      guidance_type: formData.value.guidanceType,
-      student_count: formData.value.studentCount,
+      paper_type: formData.value.paperType,
+      paper_count: formData.value.paperCount,
       total_workload: formData.value.totalWorkload,
       support_files: formData.value.support_files,
       remark: formData.value.remark,
       teacher_id: teacherId,
-      internship_id: internshipId.value || undefined
+      paper_id: paperId.value || undefined
     };
 
     const response = await fetch(apiUrl, {
@@ -148,13 +148,13 @@ const handleCancel = () => {
   router.push(`/workload/detail/${teacherId}`);
 };
 
-const loadInternshipData = async () => {
-  const internshipIdParam = route.query.internship_id as string;
-  if (!internshipIdParam) return;
+const loadPaperData = async () => {
+  const paperIdParam = route.query.paper_id as string;
+  if (!paperIdParam) return;
 
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/find?internship_id=${internshipIdParam}`
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/paper/find?paper_id=${paperIdParam}`
     );
     const result = await response.json();
 
@@ -162,14 +162,14 @@ const loadInternshipData = async () => {
       const data = result.data;
 
       formData.value = {
-        guidanceType: data.guidance_type || 0,
-        studentCount: data.student_count || null,
+        paperType: data.paper_type || null,
+        paperCount: data.paper_count || null,
         totalWorkload: data.standard_workload || 0,
         support_files: data.support_files || [],
         remark: data.remark || ''
       };
       isEditing.value = true;
-      internshipId.value = internshipIdParam;
+      paperId.value = paperIdParam;
     }
   } catch (error) {
     console.error('加载数据失败:', error);
@@ -179,7 +179,7 @@ const loadInternshipData = async () => {
 
 onMounted(async () => {
   await fetchWorkloadConfig();
-  await loadInternshipData();
+  await loadPaperData();
 });
 </script>
 
@@ -188,7 +188,7 @@ onMounted(async () => {
     <NPageHeader>
       <template #title>
         <span class="text-20px font-medium">
-          {{ isEditing ? '修改毕业实习指导工作量' : '添加毕业实习指导工作量' }}
+          {{ isEditing ? '修改论文工作量' : '添加论文工作量' }}
         </span>
       </template>
       <template #extra>
@@ -207,25 +207,19 @@ onMounted(async () => {
           require-mark-placement="right-hanging"
           size="medium"
         >
-          <NFormItem label="指导类型" path="guidanceType" class="w-full">
+          <NFormItem label="论文指导类型" path="paperType" class="w-full">
             <NCascader
-              v-model:value="formData.guidanceType"
-              :options="internshipGuidanceTypeOptions"
-              placeholder="请选择指导类型"
+              v-model:value="formData.paperType"
+              :options="paperTypeOptions"
+              placeholder="请选择论文指导类型"
               :show-path="true"
               clearable
               check-strategy="child"
             />
           </NFormItem>
 
-          <NFormItem label="学生人数" path="studentCount" class="w-full">
-            <NInputNumber
-              v-model:value="formData.studentCount"
-              placeholder="请输入学生人数"
-              :min="0"
-              :max="100"
-              clearable
-            />
+          <NFormItem label="份数" path="paperCount" class="w-full">
+            <NInputNumber v-model:value="formData.paperCount" placeholder="请输入份数" :min="0" :max="100" clearable />
           </NFormItem>
 
           <!-- 试算结果 -->
@@ -246,7 +240,7 @@ onMounted(async () => {
           </NFormItem>
 
           <NFormItem v-else-if="!trialLoading" label="标准学时" class="w-full">
-            <div class="text-16px text-gray-500">请选择指导类型和学生人数自动计算标准学时</div>
+            <div class="text-16px text-gray-500">请选择论文指导类型和份数自动计算标准学时</div>
           </NFormItem>
 
           <NFormItem label="备注" path="remark" class="w-full">

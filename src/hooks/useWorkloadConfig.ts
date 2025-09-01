@@ -37,6 +37,10 @@ export interface WorkloadConfig {
       guidance_type?: ConfigItem[];
       coefficient?: ConfigItem[];
     };
+    paper?: {
+      guidance_type?: ConfigItem[];
+      coefficient?: ConfigItem[];
+    };
   };
 }
 
@@ -309,6 +313,54 @@ const internshipCoefficientOptions = computed(() => {
   return [];
 });
 
+// 计算属性：论文指导类型级联选项
+const paperTypeOptions = computed(() => {
+  const guidanceType = config.value?.data?.paper?.guidance_type;
+  if (guidanceType && guidanceType.length > 0) {
+    return guidanceType.map(item => {
+      if (item.children) {
+        return {
+          label: `${item.label}`,
+          value: item.value,
+          children: item.children.map(child => ({
+            label: `${child.label}`,
+            value: child.value
+          }))
+        };
+      }
+      return {
+        label: `${item.label}`,
+        value: item.value
+      };
+    });
+  }
+  return [];
+});
+
+// 计算属性：论文指导系数选项
+const paperCoefficientOptions = computed(() => {
+  const coefficient = config.value?.data?.paper?.coefficient;
+  if (coefficient && coefficient.length > 0) {
+    return coefficient.map(item => {
+      if (item.children) {
+        return {
+          label: `${item.label}`,
+          value: item.value,
+          children: item.children.map(child => ({
+            label: `${child.label}`,
+            value: child.value
+          }))
+        };
+      }
+      return {
+        label: `${item.label}`,
+        value: item.value
+      };
+    });
+  }
+  return [];
+});
+
 // 为了向后兼容，保留原来的scaleOptions和coefficientOptions，默认使用theory配置
 const scaleOptions = computed(() => theoryScaleOptions.value);
 const coefficientOptions = computed(() => theoryCoefficientOptions.value);
@@ -344,7 +396,11 @@ export function useWorkloadConfig() {
 
     // 计算属性 - 毕业实习指导专用
     internshipGuidanceTypeOptions,
-    internshipCoefficientOptions
+    internshipCoefficientOptions,
+
+    // 计算属性 - 论文专用
+    paperTypeOptions,
+    paperCoefficientOptions
   };
 }
 
