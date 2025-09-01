@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import {
-  NButton,
-  NCard,
-  NCascader,
-  NForm,
-  NFormItem,
-  NInput,
-  NInputNumber,
-  NPageHeader,
-  NSpace
-} from 'naive-ui';
+import { NButton, NCard, NCascader, NForm, NFormItem, NInput, NInputNumber, NPageHeader, NSpace } from 'naive-ui';
 import type { FormRules } from 'naive-ui';
 import { useWorkloadConfig } from '@/hooks/useWorkloadConfig';
 import FileUpload from '@/components/common/FileUpload.vue';

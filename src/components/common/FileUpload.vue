@@ -8,13 +8,12 @@ interface Props {
   accept?: string;
   multiple?: boolean;
   maxCount?: number;
-  maxSize?: number; // 单位：MB
   showFileList?: boolean;
 }
 
 interface Emits {
   (e: 'success', url: string): void;
-  (e: 'success-multiple', urls: string[]): void;
+  (e: 'successMultiple', urls: string[]): void;
   (e: 'error', error: string): void;
 }
 
@@ -22,7 +21,6 @@ const props = withDefaults(defineProps<Props>(), {
   accept: '*',
   multiple: false,
   maxCount: 10,
-  maxSize: 50,
   showFileList: true
 });
 
@@ -43,7 +41,7 @@ const handleRemove = (data: { file: UploadFileInfo; fileList: UploadFileInfo[] }
 
   // 如果是已上传的文件，可以在这里添加删除服务器的逻辑
   if (data.file.url) {
-    console.log('移除文件:', data.file.name);
+    // 文件移除逻辑
   }
 };
 
@@ -76,7 +74,7 @@ const customRequest = async ({ file, onFinish, onError, onProgress }: any) => {
           fileList.value[index] = newFile;
         }
         const urls = fileList.value.map(f => f.url || '').filter(Boolean);
-        emit('success-multiple', urls);
+        emit('successMultiple', urls);
       } else {
         fileList.value = [newFile];
         emit('success', (response as any).url || (response as any).data?.url || '');

@@ -113,9 +113,27 @@ const fetchOnlineWorkloadList = async () => {
     } else {
       onlineTeachingList.value = [];
     }
-  } catch (error) {
-    console.error('获取网络课程教学工作量失败:', error);
+  } catch {
     onlineTeachingList.value = [];
+  }
+};
+
+// 获取毕业实习指导工作量列表
+const fetchInternshipList = async () => {
+  try {
+    const workloadId = route.params.id;
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/list?workload_id=${workloadId}`
+    );
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
+      internshipList.value = result.data.internship_list || [];
+    } else {
+      internshipList.value = [];
+    }
+  } catch {
+    internshipList.value = [];
   }
 };
 
@@ -261,26 +279,6 @@ const calculateExperimentStandardHours = (item: ExperimentTeaching) => {
 // 计算网络课程教学标准学时
 const calculateOnlineStandardHours = (item: any) => {
   return item.standard_workload.toFixed(2);
-};
-
-// 获取毕业实习指导工作量列表
-const fetchInternshipList = async () => {
-  try {
-    const workloadId = route.params.id;
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/list?workload_id=${workloadId}`
-    );
-    const result = await response.json();
-
-    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
-      internshipList.value = result.data.internship_list || [];
-    } else {
-      internshipList.value = [];
-    }
-  } catch (error) {
-    console.error('获取毕业实习指导工作量失败:', error);
-    internshipList.value = [];
-  }
 };
 
 // 跳转到毕业实习指导工作量添加页面

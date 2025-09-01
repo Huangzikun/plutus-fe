@@ -84,7 +84,7 @@ const copyUrl = async (url: string) => {
   try {
     await navigator.clipboard.writeText(url);
     message.success('URL已复制到剪贴板');
-  } catch (_err) {
+  } catch {
     message.error('复制失败');
   }
 };
