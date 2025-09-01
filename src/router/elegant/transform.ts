@@ -172,6 +172,7 @@ const routeMap: RouteMap = {
   "workload": "/workload",
   "workload_detail": "/workload/detail/:id",
   "workload_experiment": "/workload/experiment/:id",
+  "workload_internship": "/workload/internship/:id",
   "workload_list": "/workload/list",
   "workload_online": "/workload/online/:id",
   "workload_theory": "/workload/theory/:id"

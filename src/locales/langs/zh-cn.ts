@@ -298,7 +298,8 @@ const local: App.I18n.Schema = {
     workload_detail: '教师工作量详情',
     workload_theory: '理论教学工作量',
     workload_experiment: '实验教学工作量',
-    workload_online: '网络课程教学工作量'
+    workload_online: '网络课程教学工作量',
+    workload_internship: '毕业实习指导工作量'
   }
 };
 

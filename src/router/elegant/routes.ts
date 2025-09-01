@@ -105,6 +105,16 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'workload_internship',
+        path: '/workload/internship/:id',
+        component: 'view.workload_internship',
+        meta: {
+          title: 'workload_internship',
+          i18nKey: 'route.workload_internship',
+          hideInMenu: true
+        }
+      },
+      {
         name: 'workload_list',
         path: '/workload/list',
         component: 'view.workload_list',

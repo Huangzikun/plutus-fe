@@ -33,6 +33,10 @@ export interface WorkloadConfig {
     theory: WorkloadTypeConfig;
     expirement: WorkloadTypeConfig;
     online: WorkloadTypeConfig;
+    internship?: {
+      guidance_type?: ConfigItem[];
+      coefficient?: ConfigItem[];
+    };
   };
 }
 
@@ -257,6 +261,54 @@ const onlineCoefficientOptions = computed(() => {
   return [];
 });
 
+// 计算属性：毕业实习指导类型级联选项
+const internshipGuidanceTypeOptions = computed(() => {
+  const guidanceType = config.value?.data?.internship?.guidance_type;
+  if (guidanceType && guidanceType.length > 0) {
+    return guidanceType.map(item => {
+      if (item.children) {
+        return {
+          label: `${item.label}`,
+          value: item.value,
+          children: item.children.map(child => ({
+            label: `${child.label}`,
+            value: child.value
+          }))
+        };
+      }
+      return {
+        label: `${item.label}`,
+        value: item.value
+      };
+    });
+  }
+  return [];
+});
+
+// 计算属性：毕业实习指导系数选项
+const internshipCoefficientOptions = computed(() => {
+  const coefficient = config.value?.data?.internship?.coefficient;
+  if (coefficient && coefficient.length > 0) {
+    return coefficient.map(item => {
+      if (item.children) {
+        return {
+          label: `${item.label}`,
+          value: item.value,
+          children: item.children.map(child => ({
+            label: `${child.label}`,
+            value: child.value
+          }))
+        };
+      }
+      return {
+        label: `${item.label}`,
+        value: item.value
+      };
+    });
+  }
+  return [];
+});
+
 // 为了向后兼容，保留原来的scaleOptions和coefficientOptions，默认使用theory配置
 const scaleOptions = computed(() => theoryScaleOptions.value);
 const coefficientOptions = computed(() => theoryCoefficientOptions.value);
@@ -288,7 +340,11 @@ export function useWorkloadConfig() {
 
     // 计算属性 - 网络课程教学专用
     onlineScaleOptions,
-    onlineCoefficientOptions
+    onlineCoefficientOptions,
+
+    // 计算属性 - 毕业实习指导专用
+    internshipGuidanceTypeOptions,
+    internshipCoefficientOptions
   };
 }
 

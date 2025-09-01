@@ -38,49 +38,10 @@ interface ExperimentTeaching {
 }
 
 interface GraduationInternship {
-  studentName: string;
-  studentId: string;
-  guidanceType: string; // 指导类型：带队教师驻点集中指导、其他方式实习指导
-  majorType?: string; // 专业类型：本专业、非本专业（仅当guidanceType为带队教师驻点集中指导时有效）
-  startDate: number;
-  endDate: number;
-  duration: number;
-  semester: string;
-  coefficient: number | null;
-  totalWorkload: number;
-}
-
-interface GraduationThesis {
-  studentName: string;
-  studentId: string;
-  thesisType: string;
-  startDate: number;
-  endDate: number;
-  progress: number;
-  semester: string;
-  coefficient: number | null;
-  totalWorkload: number;
-}
-
-interface CompetitionGuidance {
-  competitionName: string;
-  competitionType: string;
-  studentCount: number;
-  awardLevel: string;
-  activityHours: number;
-  semester: string;
-  coefficient: number | null;
-  totalWorkload: number;
-}
-
-interface TeachingService {
-  serviceType: string;
-  serviceContent: string;
-  serviceHours: number;
-  serviceDate: number;
-  semester: string;
-  coefficient: number | null;
-  totalWorkload: number;
+  id: number;
+  guidance_type: string;
+  student_count: number;
+  standard_workload: number;
 }
 
 // 使用全局配置
@@ -94,6 +55,9 @@ const experimentTeachingList = ref<ExperimentTeaching[]>([]);
 
 // 动态网络课程教学工作量列表
 const onlineTeachingList = ref<TheoryTeaching[]>([]);
+
+// 动态毕业实习指导工作量列表
+const internshipList = ref<GraduationInternship[]>([]);
 
 // 获取理论教学工作量列表
 const fetchTheoryWorkloadList = async () => {
@@ -161,6 +125,7 @@ onMounted(async () => {
   await fetchTheoryWorkloadList();
   await fetchExperimentWorkloadList();
   await fetchOnlineWorkloadList();
+  await fetchInternshipList();
 });
 
 // 跳转到理论教学工作量添加页面
@@ -298,83 +263,65 @@ const calculateOnlineStandardHours = (item: any) => {
   return item.standard_workload.toFixed(2);
 };
 
-const graduationInternshipList: GraduationInternship[] = [
-  {
-    studentName: '张三',
-    studentId: '2022001',
-    guidanceType: '带队教师驻点集中指导',
-    majorType: '本专业',
-    startDate: 1711900800000,
-    endDate: 1719792000000,
-    duration: 12,
-    semester: '2024-2025-2',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 24.0
-  },
-  {
-    studentName: '李四',
-    studentId: '2022002',
-    guidanceType: '带队教师驻点集中指导',
-    majorType: '非本专业',
-    startDate: 1711900800000,
-    endDate: 1719792000000,
-    duration: 12,
-    semester: '2024-2025-2',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 20.0
-  },
-  {
-    studentName: '王五',
-    studentId: '2022003',
-    guidanceType: '其他方式实习指导',
-    majorType: undefined,
-    startDate: 1711900800000,
-    endDate: 1719792000000,
-    duration: 12,
-    semester: '2024-2025-2',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 18.0
-  }
-];
+// 获取毕业实习指导工作量列表
+const fetchInternshipList = async () => {
+  try {
+    const workloadId = route.params.id;
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/list?workload_id=${workloadId}`
+    );
+    const result = await response.json();
 
-const graduationThesisList: GraduationThesis[] = [
-  {
-    studentName: '李四',
-    studentId: '2022002',
-    thesisType: '毕业论文',
-    startDate: 1711900800000,
-    endDate: 1722470400000,
-    progress: 75,
-    semester: '2024-2025-2',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 22.5
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE && result.data) {
+      internshipList.value = result.data.internship_list || [];
+    } else {
+      internshipList.value = [];
+    }
+  } catch (error) {
+    console.error('获取毕业实习指导工作量失败:', error);
+    internshipList.value = [];
   }
-];
+};
 
-const competitionGuidanceList: CompetitionGuidance[] = [
-  {
-    competitionName: '蓝桥杯软件大赛',
-    competitionType: '学科竞赛',
-    studentCount: 5,
-    awardLevel: '省级二等奖',
-    activityHours: 40,
-    semester: '2024-2025-1',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 240.0
-  }
-];
+// 跳转到毕业实习指导工作量添加页面
+const handleAddInternship = () => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/internship/${teacherId}`);
+};
 
-const teachingServiceList: TeachingService[] = [
-  {
-    serviceType: '教学管理',
-    serviceContent: '课程大纲修订',
-    serviceHours: 16,
-    serviceDate: 1704067200000,
-    semester: '2024-2025-1',
-    coefficient: null, // 使用配置中的值
-    totalWorkload: 16.0
+// 跳转到毕业实习指导工作量修改页面
+const handleEditInternship = (item: GraduationInternship) => {
+  const teacherId = router.currentRoute.value.params.id;
+  router.push(`/workload/internship/${teacherId}?internship_id=${item.id}`);
+};
+
+// 删除毕业实习指导工作量记录
+const handleDeleteInternship = async (item: GraduationInternship) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SERVICE_BASE_URL}/workload/internship/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        internship_id: item.id
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.code === import.meta.env.VITE_SERVICE_SUCCESS_CODE) {
+      window.$message?.success('删除成功');
+      // 删除后刷新列表
+      await fetchInternshipList();
+    } else {
+      window.$message?.error(result.message || '删除失败');
+    }
+  } catch (error) {
+    console.error('删除毕业实习指导工作量失败:', error);
+    window.$message?.error('删除请求失败，请稍后重试');
   }
-];
+};
 </script>
 
 <template>
@@ -424,7 +371,7 @@ const teachingServiceList: TeachingService[] = [
               <td>{{ item.student_count || 0 }}</td>
               <td>{{ calculateStandardHours(item) }}</td>
               <td>
-                <NSpace>
+                <NSpace size="small">
                   <NButton size="small" type="primary" @click="handleEditTheoryTeaching(item)">修改</NButton>
                   <NButton size="small" type="error" @click="handleDeleteTheoryTeaching(item)">删除</NButton>
                 </NSpace>
@@ -477,7 +424,7 @@ const teachingServiceList: TeachingService[] = [
               <td>{{ item.student_count || 0 }}</td>
               <td>{{ calculateExperimentStandardHours(item) }}</td>
               <td>
-                <NSpace>
+                <NSpace size="small">
                   <NButton size="small" type="primary" @click="handleEditExperimentTeaching(item)">修改</NButton>
                   <NButton size="small" type="error" @click="handleDeleteExperimentTeaching(item)">删除</NButton>
                 </NSpace>
@@ -530,7 +477,7 @@ const teachingServiceList: TeachingService[] = [
               <td>{{ item.student_count || 0 }}</td>
               <td>{{ calculateOnlineStandardHours(item) }}</td>
               <td>
-                <NSpace>
+                <NSpace size="small">
                   <NButton size="small" type="primary" @click="handleEditOnlineTeaching(item)">修改</NButton>
                   <NButton size="small" type="error" @click="handleDeleteOnlineTeaching(item)">删除</NButton>
                 </NSpace>
@@ -545,21 +492,38 @@ const teachingServiceList: TeachingService[] = [
 
       <!-- 毕业实习指导工作量 -->
       <div>
-        <h3 class="mb-16px text-18px font-medium">毕业实习指导工作量</h3>
+        <div class="mb-16px flex items-center justify-between">
+          <h3 class="text-18px font-medium">毕业实习指导工作量</h3>
+          <NButton type="primary" @click="handleAddInternship">
+            <template #icon>
+              <icon-ic:round-add />
+            </template>
+            新增
+          </NButton>
+        </div>
         <NTable :bordered="true" :single-line="false">
           <thead>
             <tr>
-              <th colspan="2">带队教师驻点集中指导</th>
-              <th rowspan="2">其他方式实习指导</th>
-            </tr>
-            <tr>
-              <th>本专业</th>
-              <th>非本专业</th>
+              <th>指导类型</th>
+              <th>学生人数</th>
+              <th>标准学时</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td colspan="3" class="py-16px text-center text-gray-500">暂无毕业实习指导工作量记录</td>
+            <tr v-for="(item, index) in internshipList" :key="index">
+              <td>{{ item.guidance_type || '-' }}</td>
+              <td>{{ item.student_count || 0 }}</td>
+              <td>{{ Number(item.standard_workload || 0).toFixed(2) }}</td>
+              <td>
+                <NSpace size="small">
+                  <NButton size="small" type="primary" @click="handleEditInternship(item)">修改</NButton>
+                  <NButton size="small" type="error" @click="handleDeleteInternship(item)">删除</NButton>
+                </NSpace>
+              </td>
+            </tr>
+            <tr v-if="internshipList.length === 0">
+              <td colspan="4" class="py-16px text-center text-gray-500">暂无毕业实习指导工作量记录</td>
             </tr>
           </tbody>
         </NTable>
@@ -583,16 +547,8 @@ const teachingServiceList: TeachingService[] = [
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in graduationThesisList" :key="index">
-              <td>{{ item.studentName || '-' }}</td>
-              <td>{{ item.studentId || '-' }}</td>
-              <td>{{ item.thesisType || '-' }}</td>
-              <td>{{ item.startDate ? new Date(item.startDate).toLocaleDateString() : '-' }}</td>
-              <td>{{ item.endDate ? new Date(item.endDate).toLocaleDateString() : '-' }}</td>
-              <td>{{ item.progress || 0 }}%</td>
-              <td>{{ item.semester || '-' }}</td>
-              <td>{{ item.coefficient || 0 }}</td>
-              <td>{{ Number(item.totalWorkload || 0).toFixed(2) }}</td>
+            <tr>
+              <td colspan="9" class="py-16px text-center text-gray-500">暂无毕业论文指导工作量记录</td>
             </tr>
           </tbody>
         </NTable>
@@ -615,15 +571,8 @@ const teachingServiceList: TeachingService[] = [
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in competitionGuidanceList" :key="index">
-              <td>{{ item.competitionName || '-' }}</td>
-              <td>{{ item.competitionType || '-' }}</td>
-              <td>{{ item.studentCount || 0 }}</td>
-              <td>{{ item.awardLevel || '-' }}</td>
-              <td>{{ item.activityHours || 0 }}</td>
-              <td>{{ item.semester || '-' }}</td>
-              <td>{{ item.coefficient || 0 }}</td>
-              <td>{{ Number(item.totalWorkload || 0).toFixed(2) }}</td>
+            <tr>
+              <td colspan="8" class="py-16px text-center text-gray-500">暂无学科竞赛指导工作量记录</td>
             </tr>
           </tbody>
         </NTable>
@@ -645,14 +594,8 @@ const teachingServiceList: TeachingService[] = [
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in teachingServiceList" :key="index">
-              <td>{{ item.serviceType || '-' }}</td>
-              <td>{{ item.serviceContent || '-' }}</td>
-              <td>{{ item.serviceHours || 0 }}</td>
-              <td>{{ item.serviceDate ? new Date(item.serviceDate).toLocaleDateString() : '-' }}</td>
-              <td>{{ item.semester || '-' }}</td>
-              <td>{{ item.coefficient || 0 }}</td>
-              <td>{{ Number(item.totalWorkload || 0).toFixed(2) }}</td>
+            <tr>
+              <td colspan="7" class="py-16px text-center text-gray-500">暂无教学服务工作量记录</td>
             </tr>
           </tbody>
         </NTable>
