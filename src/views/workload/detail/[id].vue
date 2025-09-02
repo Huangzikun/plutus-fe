@@ -83,8 +83,7 @@ const fetchTheoryWorkloadList = async () => {
     } else {
       theoryTeachingList.value = [];
     }
-  } catch (error) {
-    console.error('获取理论教学工作量失败:', error);
+  } catch {
     theoryTeachingList.value = [];
   }
 };
@@ -103,8 +102,7 @@ const fetchExperimentWorkloadList = async () => {
     } else {
       experimentTeachingList.value = [];
     }
-  } catch (error) {
-    console.error('获取实验教学工作量失败:', error);
+  } catch {
     experimentTeachingList.value = [];
   }
 };
@@ -210,8 +208,7 @@ const handleDeleteTheoryTeaching = async (item: TheoryTeaching) => {
     } else {
       window.$message?.error(result.message || '删除失败');
     }
-  } catch (error) {
-    console.error('删除理论教学工作量失败:', error);
+  } catch {
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };
@@ -250,8 +247,7 @@ const handleDeleteExperimentTeaching = async (item: ExperimentTeaching) => {
     } else {
       window.$message?.error(result.message || '删除失败');
     }
-  } catch (error) {
-    console.error('删除实验教学工作量失败:', error);
+  } catch {
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };
@@ -290,8 +286,7 @@ const handleDeleteOnlineTeaching = async (item: any) => {
     } else {
       window.$message?.error(result.message || '删除失败');
     }
-  } catch (error) {
-    console.error('删除网络课程教学工作量失败:', error);
+  } catch {
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };
@@ -345,8 +340,7 @@ const handleDeleteInternship = async (item: GraduationInternship) => {
     } else {
       window.$message?.error(result.message || '删除失败');
     }
-  } catch (error) {
-    console.error('删除毕业实习指导工作量失败:', error);
+  } catch {
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };
@@ -385,8 +379,7 @@ const handleDeletePaper = async (item: PaperWorkload) => {
     } else {
       window.$message?.error(result.message || '删除失败');
     }
-  } catch (error) {
-    console.error('删除论文工作量失败:', error);
+  } catch {
     window.$message?.error('删除请求失败，请稍后重试');
   }
 };

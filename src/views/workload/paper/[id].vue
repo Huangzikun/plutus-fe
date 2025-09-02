@@ -87,8 +87,7 @@ const autoCalculate = async () => {
       } else {
         formData.value.totalWorkload = 0;
       }
-    } catch (error) {
-      console.error('试算失败:', error);
+    } catch {
       formData.value.totalWorkload = 0;
     } finally {
       trialLoading.value = false;
@@ -137,8 +136,7 @@ const handleSubmit = async () => {
     } else {
       window.$message?.error(result.message || '操作失败');
     }
-  } catch (error) {
-    console.error('提交失败:', error);
+  } catch {
     window.$message?.error('提交失败，请稍后重试');
   }
 };
@@ -171,8 +169,7 @@ const loadPaperData = async () => {
       isEditing.value = true;
       paperId.value = paperIdParam;
     }
-  } catch (error) {
-    console.error('加载数据失败:', error);
+  } catch {
     window.$message?.error('加载数据失败');
   }
 };

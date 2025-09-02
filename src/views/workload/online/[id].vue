@@ -207,8 +207,7 @@ const handleSubmit = async () => {
       errorMessage.value = result.message || result.msg || '提交失败';
       showError.value = true;
     }
-  } catch (error) {
-    console.error('提交失败:', error);
+  } catch {
     errorMessage.value = '提交请求失败，请稍后重试';
     showError.value = true;
   }
@@ -256,8 +255,7 @@ const fetchOnlineWorkloadDetail = async (onlineId: string) => {
     } else {
       window.$message?.error(result.message || '数据加载失败');
     }
-  } catch (error) {
-    console.error('获取网络课程工作量详情失败:', error);
+  } catch {
     window.$message?.error('获取数据失败，请稍后重试');
   }
 };
@@ -274,7 +272,6 @@ onMounted(async () => {
     }
   } catch (err) {
     window.$message?.error(`配置加载失败: ${err instanceof Error ? err.message : '未知错误'}`);
-    console.error('配置加载失败:', err);
   }
 });
 
@@ -314,8 +311,7 @@ const handleTrialCalculation = async () => {
     } else {
       window.$message?.error(`试算失败: ${result.msg}`);
     }
-  } catch (error) {
-    console.error('试算失败:', error);
+  } catch {
     window.$message?.error('试算请求失败');
   } finally {
     trialLoading.value = false;
